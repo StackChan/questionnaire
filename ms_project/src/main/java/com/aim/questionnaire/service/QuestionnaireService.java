@@ -153,6 +153,7 @@ public class QuestionnaireService {
         Date date = DateUtil.getCreateTime();
         map.put("lastUpdateDate",date);
         map.put("releaseTime",date);
+        int total = 0;
         if(map.get("sendType").toString().equals("0")){
 
 		} else if(map.get("sendType").toString().equals("1"))
@@ -160,8 +161,7 @@ public class QuestionnaireService {
 			String emailTitle = map.get("emailTitle").toString();
 			String context = map.get("context").toString();
 			List<Map<String, Object>> send = (List<Map<String, Object>>) map.get("sendInfo");
-
-
+			total = send.size();
 			for (Map<String, Object> person : send
 			) {
 				try {
@@ -178,7 +178,7 @@ public class QuestionnaireService {
 				}
 			}
 		}
-
+		map.put("answerTotal",total);
         int result = questionnaireEntityMapper.addSendQuestionnaire(map);
         return result;
     }
@@ -271,10 +271,24 @@ public class QuestionnaireService {
 		String questionTotal = result.get("answerTotal").toString();
 		int total = Integer.valueOf(questionTotal);
 		total =total==0?1:total;
-		double answerRate = count/total;
+		double answerRate = (double) count/(double) total;
 		result.put("answerRate",answerRate);
 		result.put("effectiveAnswer",count);
 
     	return result;
+	}
+
+	public int addAnswerQuestionnaire(HashMap<String, Object> map) {
+    	Map<String , Object> map1 = questionnaireEntityMapper.queryQuestionnaireInfoById(map.get("questionId").toString());
+    	Integer count = (Integer) map1.get("questionCount");
+    	if (count==null){
+    		count = 0;
+		}else {
+    		count += 1;
+		}
+    	map.put("questionCount",count);
+		int result = questionnaireEntityMapper.addAnswerQuestionnaire(map);
+		return result;
+
 	}
 }

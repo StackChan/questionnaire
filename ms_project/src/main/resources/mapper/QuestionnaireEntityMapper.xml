@@ -361,11 +361,11 @@
 
   <!--根据问卷id查询问卷概述信息-->
   <select id="queryQuestionnaireInfoById" resultType="java.util.Map">
-    SELECT que.id,question_name as questionName,que.creation_date as creationDate,que.end_time as endTime,question_content as questionContent,project_name as projectName,que.data_id as dataId,dat.name as dataName
-    FROM questionnaire_info que, project_info pro,data_dictionary_info dat
+    SELECT que.id,question_name as questionName,que.creation_date as creationDate,que.end_time as endTime,question_content as questionContent,project_name as projectName,que.data_id as dataId,model.model_name as dataName, question_count as questionCount
+    FROM questionnaire_info que, project_info pro,model_info model
     WHERE que.id = #{id,jdbcType=VARCHAR}
     AND que.project_id = pro.id
-    AND que.data_id = dat.id
+    AND que.data_id = model.id
   </select>
 
   <!--查询历史问卷/模糊搜索-->
@@ -381,7 +381,7 @@
 
   <!--根据问卷id查询问卷的详细信息-->
   <select id="queryQuestionnaireById" parameterType="java.util.Map" resultType="java.util.Map">
-    SELECT question_name AS questionName,question_content AS questionContent,question AS questionList
+    SELECT question_name AS questionName,question_content AS questionContent,question AS questionList, question_count as questionCount
     FROM questionnaire_info
     WHERE id = #{questionId,jdbcType=VARCHAR}
     <!--<if test="questionStop != null">-->
@@ -517,6 +517,13 @@
     WHERE project_id = #{projectId,jdbcType=VARCHAR}
     AND question_stop = "1"
   </select>
+
+  <update id="addAnswerQuestionnaire" parameterType="map">
+    update questionnaire_info
+    set question_count = #{questionCount}
+    where id = #{questionId}
+
+  </update>
 
   <!--添加发送问卷方式-->
   <update id="addSendQuestionnaire" parameterType="map">

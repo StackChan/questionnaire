@@ -201,8 +201,27 @@ public class QuestionnaireController {
 	        httpResponseEntity.setCode(Constans.SUCCESS_CODE);
 	        httpResponseEntity.setData(result);
 	        return httpResponseEntity;
-	    } 
-	 /**
+	    }
+	    /**
+	 * 添加答题记录
+	 * @param map
+	 * @return
+	 */
+	@RequestMapping(value = "/addAnswerQuestionnaire", method = RequestMethod.POST, headers = "Accept=application/json")
+	public HttpResponseEntity addAnswerQuestionnaire(@RequestBody HashMap<String, Object> map) {
+		HttpResponseEntity httpResponseEntity = new HttpResponseEntity();
+		try {
+			int result = questionnaireService.addAnswerQuestionnaire(map);
+			httpResponseEntity.setCode(Constans.SUCCESS_CODE);
+			httpResponseEntity.setData(result);
+		}catch (Exception e){
+			httpResponseEntity.setCode(Constans.EXIST_CODE);
+			httpResponseEntity.setData(null);
+			httpResponseEntity.setMessage(Constans.EXIST_MESSAGE);
+		}
+		return httpResponseEntity;
+	}
+	/**
 	  * 查询历史问卷
 	  * @param map
 	  * @return

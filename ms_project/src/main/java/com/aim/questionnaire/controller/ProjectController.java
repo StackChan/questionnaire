@@ -95,7 +95,14 @@ public class ProjectController {
     @RequestMapping(value = "/addProjectInfo",method = RequestMethod.POST, headers = "Accept=application/json")
     public HttpResponseEntity addProjectInfo(@RequestBody ProjectEntity projectEntity) {
         HttpResponseEntity httpResponseEntity = new HttpResponseEntity();
-        boolean flag = projectService.queryProjectEntityIsExit(projectEntity);
+        boolean flag=true;
+        try {
+            flag = projectService.queryProjectEntityIsExit(projectEntity);
+        }catch (Exception e){
+            httpResponseEntity.setCode(Constans.EXIST_CODE);
+            httpResponseEntity.setData(null);
+            httpResponseEntity.setMessage(Constans.PROJECT_EXIST_NAME);
+        }
         if(flag) {
         	httpResponseEntity.setCode(Constans.EXIST_CODE);
         	httpResponseEntity.setData(null);
@@ -103,8 +110,12 @@ public class ProjectController {
         }
         else {
             //关键代码: feign通过伪HTTP的方式远程调用,微服务相互调用(ms-project调用ms-user) 替代了原先的直接创建UserService类
-            String user = providerClient.queryIdService(projectEntity.getCreatedBy());
-
+            String user=null;
+            try {
+                 user = providerClient.queryIdService(projectEntity.getCreatedBy());
+            }catch (Exception e){
+                httpResponseEntity.setCode(Constans.EXIST_CODE);
+            }
 			projectService.addProjectInfo(projectEntity, user);
 			httpResponseEntity.setCode(Constans.SUCCESS_CODE);
 			httpResponseEntity.setData(null);
