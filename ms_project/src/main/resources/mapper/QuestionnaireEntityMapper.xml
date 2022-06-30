@@ -378,7 +378,9 @@
       AND question_name LIKE '%${questionName}%'
     </if>
   </select>
-
+  <update id="pauseQuestionnaire" parameterType="java.util.Map">
+    update questionnaire_info set question_stop = '5' , release_time = null where id = #{id}
+  </update>
   <!--根据问卷id查询问卷的详细信息-->
   <select id="queryQuestionnaireById" parameterType="java.util.Map" resultType="java.util.Map">
     SELECT question_name AS questionName,question_content AS questionContent,question AS questionList, question_count as questionCount
