@@ -9,12 +9,12 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: 127.0.0.1:8848
+        server-addr: 118.123.3.141:8848
         namespace: c67e4a97-a698-4d6d-9bb1-cfac5f5b51c4
         cluster-name: DEFAULT
       config:
         #dataid 的名称就是application的name加file-extension   api-gateway.yaml
-        server-addr: 127.0.0.1:8848 # 配置中心地址
+        server-addr: 118.123.3.141:8848 # 配置中心地址
         file-extension: yaml
         #nacos刷新时配置刷新,不写也行,默认为true
         refresh-enabled: true
