@@ -215,6 +215,26 @@ public class QuestionnaireController {
 	        httpResponseEntity.setData(result);
 	        return httpResponseEntity;
 	    }
+
+	    /**
+	 * 查询问卷答题情况
+	 * @param map
+	 * @return
+	 */
+	@RequestMapping(value = "/queryQuestionnaireCount", method = RequestMethod.POST, headers = "Accept=application/json")
+	public HttpResponseEntity queryQuestionnaireCount(@RequestBody(required = false) HashMap<String, Object> map) {
+		HttpResponseEntity httpResponseEntity = new HttpResponseEntity();
+		try {
+			Map<String, Object> result = questionnaireService.queryQuestionnaireCount(map);
+			httpResponseEntity.setCode(Constans.SUCCESS_CODE);
+			httpResponseEntity.setData(result);
+		}catch (Exception e){
+			httpResponseEntity.setCode(Constans.EXIST_CODE);
+			httpResponseEntity.setData(null);
+			httpResponseEntity.setMessage(Constans.EXIST_MESSAGE);
+		}
+		return httpResponseEntity;
+	}
 	/**
 	 * 暂停问卷
 	 * @param map
@@ -301,7 +321,7 @@ public class QuestionnaireController {
 	/**
 	 * 添加项目时，检测项目下 是否有同dataId的问卷存在
 	 * @param querList
-	 * @param map
+	 * @param questionnaireEntity
 	 * @return
 	 */
 	private boolean isHaveQuestion(List<Map<String, Object>> querList, QuestionnaireEntity questionnaireEntity) {
