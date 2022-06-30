@@ -45,7 +45,7 @@ $("#ddlActivitynew").change(function () {
 
 // XXX问卷数量统计
 function getQuestionnaireCount() {
-    var url = '/queryQuestionnaireCount';
+    var url = '/project/queryQuestionnaireCount';
     var data = {
         "questionId": getCookie("questionId")
     };

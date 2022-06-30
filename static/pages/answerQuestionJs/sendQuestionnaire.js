@@ -216,6 +216,7 @@ function changeTab(id) {
 
         document.getElementById('linkSend').style.display = "block";
         document.getElementById('shortMessageSend').style.display = "none";
+
     } else if (id == 'shortMessageSend') {
         document.getElementById('linkSendA').style.backgroundColor = "#fff";
         document.getElementById('linkSendA').removeAttribute("class", "inside-wrapper nav-show nav-items clicked sms-icon");
@@ -282,7 +283,7 @@ function send(value) {
         //调用生成二维码方法
         // getQrcode();
         //设置链接
-        document.getElementById('ctl02_ContentPlaceHolder1_txtLink').value = window.location.href;
+        document.getElementById('ctl02_ContentPlaceHolder1_txtLink').value = httpRequestUrl+"/pages/previewQuestionnaire.html?id="+questionId+"&l=5201314";
         //    发送按钮
         document.getElementById('sendButton').style.display = 'block'
         document.getElementById('myLittleTip').style.display = 'none';

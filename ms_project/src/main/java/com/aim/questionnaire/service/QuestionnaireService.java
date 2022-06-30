@@ -5,6 +5,7 @@ import com.aim.questionnaire.common.utils.DateUtil;
 import com.aim.questionnaire.common.utils.UUIDUtil;
 import com.aim.questionnaire.dao.QuestionnaireEntityMapper;
 import com.aim.questionnaire.dao.entity.QuestionnaireEntity;
+import org.apache.commons.mail.EmailException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -152,6 +153,32 @@ public class QuestionnaireService {
         Date date = DateUtil.getCreateTime();
         map.put("lastUpdateDate",date);
         map.put("releaseTime",date);
+        if(map.get("sendType").toString().equals("0")){
+
+		} else if(map.get("sendType").toString().equals("1"))
+		{
+			String emailTitle = map.get("emailTitle").toString();
+			String context = map.get("context").toString();
+			List<Map<String, Object>> send = (List<Map<String, Object>>) map.get("sendInfo");
+
+
+			for (Map<String, Object> person : send
+			) {
+				try {
+					//
+					String contextTemp = context;
+					String name = person.get("answerName").toString();
+					String result = contextTemp.replaceAll("【联系人姓名】",name);
+					String email = person.get("answerEmail").toString();
+					//TODO:改成服务器ip
+					String result1 = result.replaceAll("【填写问卷地址】","127.0.0.1:56010"+"/pages/previewQuestionnaire.html?id="+map.get("questionId").toString()+"&e="+email);
+					emailService.sendMail(email, emailTitle, result1, false);
+				} catch (EmailException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
         int result = questionnaireEntityMapper.addSendQuestionnaire(map);
         return result;
     }
@@ -235,4 +262,19 @@ public class QuestionnaireService {
 	}
 
 
+	public Map<String, Object> queryQuestionnaireCount(HashMap<String, Object> map) {
+		Map<String , Object> result = questionnaireEntityMapper.queryQuestionnaireCount(map);
+
+		int count = result.get("questionCount")==null ? 0:(int)result.get("questionCount");
+		if(result.get("questionCount")==null) result.put("questionCount",count);
+		result.replace("questionCount",count);
+		String questionTotal = result.get("answerTotal").toString();
+		int total = Integer.valueOf(questionTotal);
+		total =total==0?1:total;
+		double answerRate = count/total;
+		result.put("answerRate",answerRate);
+		result.put("effectiveAnswer",count);
+
+    	return result;
+	}
 }
