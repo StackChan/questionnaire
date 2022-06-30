@@ -76,7 +76,7 @@ public interface QuestionnaireEntityMapper {
 
     /**
      * 根据项目id查询此项目下的全部问卷
-     * @param id
+     * @param parentId
      * @return
      */
     List<Map<String,Object>> queryQuestionListByProjectId(String parentId);
@@ -386,4 +386,6 @@ public interface QuestionnaireEntityMapper {
     int selectByNameId(@Param("questionName") String questionName,@Param("id") String id);
 
     int pauseQuestionnaire(Map<String, Object> map);
+
+    int addAnswerQuestionnaire(HashMap<String, Object> map);
 }
