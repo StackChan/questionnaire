@@ -23,14 +23,17 @@ public class Service {
 //    application1:
 //    stripPrefix: false
 //    path: /application1/**
-    @Value("${zuul.routes.application1.path}")
-    private String config;
+    @Value("${zuul.routes.project.path}")
+    private String projectConfig;
+
+    @Value("${zuul.routes.user.path}")
+    private String userConfig;
 
     @GetMapping("/configs")
     public String getConfigs(){
         //读取配置信息
 //        return config1;
-        System.out.println(config);
-        return config;
+        System.out.println(projectConfig+userConfig);
+        return projectConfig+userConfig;
     }
 }
