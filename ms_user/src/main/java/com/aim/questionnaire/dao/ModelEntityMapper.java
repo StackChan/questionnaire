@@ -133,7 +133,7 @@ public interface ModelEntityMapper {
     List<ModelEntity> queryModeNameInfo(Map<String, Object> map);
     /**
      * 根据parentId查询现有模块名
-     * @author Youcf
+     * @author shan csk
      */
     List<Map<String, Object>> queryNameByParentId(int parentId);
 }

@@ -37,28 +37,29 @@ public class UserController {
    
     /**
      * 用户登录
-     * @param map
+     * @param userEntity
      * @return
      */
     @RequestMapping(value="/userLogin",method= RequestMethod.POST, headers = "Accept=application/json")
     public HttpResponseEntity userLogin(@RequestBody UserEntity userEntity) {
-    	HttpResponseEntity httpResponseEntity = new HttpResponseEntity();
-        try {
-        	
-            List<UserEntity> hasUser = userEntityMapper.selectUserInfo(userEntity);
-            if(CollectionUtils.isEmpty(hasUser) ) {
-            	httpResponseEntity.setCode(Constans.EXIST_CODE);
-            	httpResponseEntity.setData(null);
-            	httpResponseEntity.setMessage(Constans.LOGIN_USERNAME_PASSWORD_MESSAGE);
-            }else if(!userEntity.getPassword().equals(hasUser.get(0).getPassword())) {
-            	httpResponseEntity.setCode(Constans.EXIST_CODE);
-            	httpResponseEntity.setData(null);
-            	httpResponseEntity.setMessage(Constans.LOGIN_USERNAME_PASSWORD_MESSAGE);
-            }
-            else {
-            	httpResponseEntity.setCode(Constans.SUCCESS_CODE);
-            	httpResponseEntity.setData(hasUser);
-            	httpResponseEntity.setMessage(Constans.LOGIN_MESSAGE);
+        HttpResponseEntity httpResponseEntity = new HttpResponseEntity();
+        try {//bug1:对登陆进行修改如下
+            List<UserEntity> hasUser = userService.selectUserInfo(userEntity);//调用service层，然后在调用持久层
+            if(CollectionUtils.isEmpty(hasUser) ) {//如果为空则提示用户不存在
+                httpResponseEntity.setCode(Constans.EXIST_CODE);
+                httpResponseEntity.setData(null);
+                httpResponseEntity.setMessage(Constans.LOGIN_USERNAME_MESSAGE);
+            }else {
+                if(userEntity.getPassword().equals(hasUser.get(0).getPassword())){//判断密码是否正确
+                    httpResponseEntity.setCode(Constans.SUCCESS_CODE);
+                    httpResponseEntity.setData(hasUser.get(0));
+                    httpResponseEntity.setMessage(Constans.LOGIN_MESSAGE);
+                }
+                else {
+                    httpResponseEntity.setCode(Constans.EXIST_CODE);
+                    httpResponseEntity.setData(null);
+                    httpResponseEntity.setMessage(Constans.LOGIN_PASSWORD_MESSAGE);
+                }
             }
 
         } catch (Exception e) {
@@ -77,9 +78,16 @@ public class UserController {
     @RequestMapping(value = "/queryUserList",method = RequestMethod.POST, headers = "Accept=application/json")
     public HttpResponseEntity queryUserList(@RequestBody Map<String,Object> map) {
         HttpResponseEntity httpResponseEntity = new HttpResponseEntity();
-        httpResponseEntity.setCode(Constans.SUCCESS_CODE);
-        PageInfo<Map<String, Object>> pageInfo = userService.queryUserList(map);
-        httpResponseEntity.setData(pageInfo);
+        try {
+            PageInfo pageInfo=userService.queryUserList(map);
+            httpResponseEntity.setData(pageInfo);
+            httpResponseEntity.setCode(Constans.SUCCESS_CODE);
+            httpResponseEntity.setMessage(Constans.STATUS_MESSAGE);
+        } catch (Exception e) {
+            logger.info("queryUserList 查询用户列表（模糊搜索）>>>>>>>>>>>" + e.getLocalizedMessage());
+            httpResponseEntity.setCode(Constans.EXIST_CODE);
+            httpResponseEntity.setMessage(Constans.EXIST_MESSAGE);
+        }
         return httpResponseEntity;
     }
     /**
@@ -115,7 +123,16 @@ public class UserController {
     @RequestMapping(value = "/modifyUserInfo",method = RequestMethod.POST, headers = "Accept=application/json")
     public HttpResponseEntity modifyUserInfo(@RequestBody Map<String,Object> map) {
         HttpResponseEntity httpResponseEntity = new HttpResponseEntity();
-        
+        try {
+            int result=userService.modifyUserInfo(map);
+            httpResponseEntity.setData(result);
+            httpResponseEntity.setCode(Constans.SUCCESS_CODE);
+            httpResponseEntity.setMessage(Constans.UPDATE_MESSAGE);
+        } catch (Exception e) {
+            logger.info("modifyUserInfo 编辑用户的基本信息>>>>>>>>>>>" + e.getLocalizedMessage());
+            httpResponseEntity.setCode(Constans.EXIST_CODE);
+            httpResponseEntity.setMessage(Constans.EXIST_MESSAGE);
+        }
         return httpResponseEntity;
     }
 
@@ -128,7 +145,16 @@ public class UserController {
     @RequestMapping(value = "/selectUserInfoById",method = RequestMethod.POST, headers = "Accept=application/json")
     public HttpResponseEntity selectUserInfoById(@RequestBody UserEntity userEntity) {
         HttpResponseEntity httpResponseEntity = new HttpResponseEntity();
-        
+        try {
+            Map<String,Object> map=userService.selectUserInfoById(userEntity);
+            httpResponseEntity.setData(map);
+            httpResponseEntity.setCode(Constans.SUCCESS_CODE);
+
+        } catch (Exception e) {
+            logger.info("selectUserInfoById 根据用户id查询用户基本信息>>>>>>>>>>>" + e.getLocalizedMessage());
+            httpResponseEntity.setCode(Constans.EXIST_CODE);
+            httpResponseEntity.setMessage(Constans.EXIST_MESSAGE);
+        }
         return httpResponseEntity;
     }
 
@@ -142,7 +168,17 @@ public class UserController {
     @RequestMapping(value = "/modifyUserStatus",method = RequestMethod.POST, headers = "Accept=application/json")
     public HttpResponseEntity modifyUserStatus(@RequestBody Map<String,Object> map) {
         HttpResponseEntity httpResponseEntity = new HttpResponseEntity();
-        
+        try {
+            int resulet=userService.modifyUserStatus(map);
+            httpResponseEntity.setData(resulet);
+            httpResponseEntity.setCode(Constans.SUCCESS_CODE);
+            httpResponseEntity.setMessage(Constans.UPDATE_MESSAGE);
+
+        } catch (Exception e) {
+            logger.info("modifyUserStatus 修改用户状态>>>>>>>>>>>" + e.getLocalizedMessage());
+            httpResponseEntity.setCode(Constans.EXIST_CODE);
+            httpResponseEntity.setMessage(Constans.EXIST_MESSAGE);
+        }
         return httpResponseEntity;
     }
     /**
@@ -153,7 +189,17 @@ public class UserController {
     @RequestMapping(value = "/deleteUserInfoById",method = RequestMethod.POST, headers = "Accept=application/json")
     public HttpResponseEntity deteleUserInfoById(@RequestBody UserEntity userEntity) {
         HttpResponseEntity httpResponseEntity = new HttpResponseEntity();
-        
+        try {
+            int resulet=userService.deleteUserInfoById(userEntity);
+            httpResponseEntity.setData(resulet);
+            httpResponseEntity.setCode(Constans.SUCCESS_CODE);
+            httpResponseEntity.setMessage(Constans.DELETE_MESSAGE);
+
+        } catch (Exception e) {
+            logger.info("deleteUserInfoById 删除用户信息>>>>>>>>>>>" + e.getLocalizedMessage());
+            httpResponseEntity.setCode(Constans.EXIST_CODE);
+            httpResponseEntity.setMessage(Constans.EXIST_MESSAGE);
+        }
         return httpResponseEntity;
     }
 
@@ -165,7 +211,7 @@ public class UserController {
     @RequestMapping(value = "/error")
     public HttpResponseEntity logout() {
         HttpResponseEntity httpResponseEntity = new HttpResponseEntity();
-        
+
         return httpResponseEntity;
     }
 }

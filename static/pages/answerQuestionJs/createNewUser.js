@@ -17,7 +17,7 @@ function changeTitle() {
     var userTitle = getCookie("userTitle");
     var text = "<h1 class=\"hd-title pull-left\">" + userTitle + "用户</h1>";
     $("#userTitle").append(text);
-    if (userTitle == '创建') {
+    if (userTitle === '创建') {
         $("#userName").removeAttr("disabled");
         $('#createBtn').val('立即创建');
         $('#noPassword').css('display', 'block');
@@ -30,11 +30,11 @@ function changeTitle() {
             var startTime = dateChange(timeRange.split(' ~ ')[0]);
             var stopTime = dateChange(timeRange.split(' ~ ')[1]);
 
-            if (userName == "") {
+            if (userName === "") {
                 layer.msg("账号不能为空", {icon: 2});
-            } else if (password == "") {
+            } else if (password === "") {
                 layer.msg("密码不能为空", {icon: 2});
-            } else if (timeRange == "") {
+            } else if (timeRange === "") {
                 layer.msg("起止时间不能为空", {icon: 2});
             }  else if (userName.length > 10 || password.length > 10) {
                 layer.msg("账号或者密码最多不可超过10个字", {icon: 2});
@@ -49,15 +49,15 @@ function changeTitle() {
                     "stopTime": stopTime
                 };
                 commonAjaxPost(true, url, data, function (result) {
-                    if (result.code == "666") {
+                    if (result.code === "666") {
                         layer.msg("用户创建成功，权限已开启", {icon: 1});
                         setTimeout(function () {
                             window.location.href = 'userManage.html';
                         }, 1000)
-                    }else if(result.code == "50003"){
+                    }else if(result.code === "50003"){
                         //用户名已存在
                         layer.msg(result.message, {icon: 2});
-                    } else if (result.code == "333") {
+                    } else if (result.code === "333") {
                         layer.msg(result.message, {icon: 2});
                         setTimeout(function () {
                             window.location.href = 'login.html';
@@ -69,8 +69,7 @@ function changeTitle() {
             }
         })
 
-    } else {
-        $("#userName").attr("disabled","disabled");
+    } else if(userTitle === '编辑') { $("#userName").attr("disabled","disabled");
         $('#createBtn').val('保存修改');
         $('#noPassword').css('display', 'none');
         var userId = getCookie('userId');
@@ -79,7 +78,7 @@ function changeTitle() {
             'id': userId
         };
         commonAjaxPost(true, url, data, function (result) {
-            if (result.code == "666") {
+            if (result.code === "666") {
                 var userInfo = result.data;
                 userNameOld = $("#userName").val(userInfo.username);
                 $("#password").val(userInfo.password);
@@ -87,7 +86,7 @@ function changeTitle() {
                 var roleId = userInfo.roleId;
                 $("#userRoleAll").val(roleId);
 
-            } else if (result.code == "333") {
+            } else if (result.code === "333") {
                 layer.msg(result.message, {icon: 2});
                 setTimeout(function () {
                     window.location.href = 'login.html';
@@ -104,11 +103,11 @@ function changeTitle() {
             var startTime = dateChange(timeRange.split(' ~ ')[0]);
             var stopTime = dateChange(timeRange.split(' ~ ')[1]);
 
-            if (userName == "") {
+            if (userName === "") {
                 layer.msg("账号不能为空", {icon: 2});
-            } else if (password == "") {
+            } else if (password === "") {
                 layer.msg("密码不能为空", {icon: 2});
-            } else if (timeRange == "") {
+            } else if (timeRange === "") {
                 layer.msg("起止时间不能为空", {icon: 2});
             } else {
 
@@ -116,7 +115,7 @@ function changeTitle() {
 
                 var url = '/admin/modifyUserInfo';
 
-                if(userNameOld == userName){
+                if(userNameOld === userName){
                     var data = {
                         "id": userId,
                         // "username": userName,
@@ -136,15 +135,102 @@ function changeTitle() {
 
                 commonAjaxPost(true, url, data, function (result) {
                     //console.log(result)
-                    if (result.code == "666") {
+                    if (result.code === "666") {
                         layer.msg("用户信息修改成功", {icon: 1});
                         setTimeout(function () {
                             window.location.href = 'userManage.html';
                         }, 1000)
-                    }else if(result.code == "50003"){
+                    }else if(result.code === "50003"){
                         //用户名已存在
                         layer.msg(result.message, {icon: 2});
-                    } else if (result.code == "333") {
+                    } else if (result.code === "333") {
+                        layer.msg(result.message, {icon: 2});
+                        setTimeout(function () {
+                            window.location.href = 'login.html';
+                        }, 1000)
+                    } else {
+                        layer.msg(result.message, {icon: 2})
+                    }
+                })
+            }
+        });
+    }else {//添加重置密码的功能
+
+        $("#userName").attr("disabled","disabled");
+        $('#createBtn').val('重置密码');
+        $('#noPassword').css('display', 'block');
+        $('#startAndEndTime').css('display','none');//将起止时间进行隐藏
+
+        var userId = getCookie('userId');
+        var url = '/admin/selectUserInfoById';
+        var data = {
+            'id': userId
+        };
+        commonAjaxPost(true, url, data, function (result) {
+            if (result.code === "666") {
+                var userInfo = result.data;
+                $("#userName").val(userInfo.username);
+                $("#password").val(userInfo.password);
+                $("#config-demo").val(userInfo.startTime.replace(/-/g,'/') + " ~ " + userInfo.stopTime.replace(/-/g,'/'));
+                var roleId = userInfo.roleId;
+                $("#userRoleAll").val(roleId);
+            } else if (result.code === "333") {
+                layer.msg(result.message, {icon: 2});
+                setTimeout(function () {
+                    window.location.href = 'login.html';
+                }, 1000)
+            } else {
+                layer.msg(result.message, {icon: 2})
+            }
+        })
+
+        $('#createBtn').click(function () {
+            var userName = $("#userName").val();
+            var password = $("#password").val();
+            var timeRange = $("#config-demo").val();
+            var startTime = dateChange(timeRange.split(' ~ ')[0]);
+            var stopTime = dateChange(timeRange.split(' ~ ')[1]);
+            if (userName === "") {
+                layer.msg("账号不能为空", {icon: 2});
+            } else if (password === "") {
+                layer.msg("密码不能为空", {icon: 2});
+            } else if (timeRange === "") {
+                layer.msg("起止时间不能为空", {icon: 2});
+            } else {
+
+                var roleId = $("#userRoleAll").val();
+
+                var url = '/admin/modifyUserInfo';
+
+                if(userNameOld === userName){
+                    var data = {
+                        "id": userId,
+                        // "username": userName,
+                        "password": password,
+                        "startTime": startTime,
+                        "stopTime": stopTime
+                    };
+                }else{
+                    var data = {
+                        "id": userId,
+                        "username": userName,
+                        "password": password,
+                        "startTime": startTime,
+                        "stopTime": stopTime
+                    };
+                }
+
+                commonAjaxPost(true, url, data, function (result) {
+                    //console.log(result)
+                    if (result.code === "666") {
+                        layer.msg("密码重置成功", {icon: 1});
+                        setTimeout(function () {
+                            window.location.href = 'userManage.html';
+                        }, 1000)
+                    }else if(result.code === "50003"){
+                        //用户名已存在
+                        layer.msg(result.message, {icon: 2});
+                    } else if (result.code === "333") {
                         layer.msg(result.message, {icon: 2});
                         setTimeout(function () {
                             window.location.href = 'login.html';
@@ -156,6 +242,7 @@ function changeTitle() {
             }
         });
     }
+
 
 }
 

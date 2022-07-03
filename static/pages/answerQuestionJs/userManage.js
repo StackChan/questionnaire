@@ -11,14 +11,14 @@ $(function () {
 
 //回车事件
 $(document).keydown(function (event) {
-    if (event.keyCode == 13) {
+    if (event.keyCode === 13) {
         getUserList();
     }
 });
 
 $('#userManager').on("keydown", function (event) {
     var keyCode = event.keyCode || event.which;
-    if (keyCode == "13") {
+    if (keyCode === "13") {
         //console.log("1111")
         event.preventDefault();
     }
@@ -54,7 +54,7 @@ function TableInit() {
             showRefresh: false,                  //是否显示刷新按钮
             showToggle: false,
             minimumCountColumns: 2,             //最少允许的列数
-            uniqueId: "id",                     //每一行的唯一标识，一般为主键列
+            uniqueId: "id",                      //每一行的唯一标识，一般为主键列
 
             columns: [{
                 checkbox: true,
@@ -94,12 +94,12 @@ function TableInit() {
                     formatter: addFunctionAlty//表格中增加按钮
                 }],
             responseHandler: function (res) {
-                //console.log(res.data);
-                if(res.code == "666"){
-                    //var userInfo = res.data.list;
+                //console.log(res);
+                if(res.code === "666"){
+                    var userInfo = res.data.list;//bug3:获取全部
+                    console.log(userInfo);
                     //var userInfo=JSON.parse('[{"password":"1","startTime":"2022-05-12T10:09:28","id":"1","endTime":"2022-05-12T10:09:30","username":"aa","status":"1"},{"password":"123","startTime":"2022-05-12T12:10:37","id":"290e08f3ea154e33ad56a18171642db1","endTime":"2022-06-11T12:10:37","username":"aaa","status":"1"},{"password":"1","startTime":"2018-10-24T09:49:00","id":"8ceeee2995f3459ba1955f85245dc7a5","endTime":"2025-11-24T09:49:00","username":"admin","status":"1"},{"password":"aa","startTime":"2022-05-16T12:01:54","id":"a6f15c3be07f42e5965bec199f7ebbe6","endTime":"2022-06-15T12:01:54","username":"aaaaa","status":"1"}]');
-                    var userInfo = res.data.list;
-                	var NewData = [];
+                    var NewData = [];
                     if (userInfo.length) {
                         for (var i = 0; i < userInfo.length; i++) {
                             var dataNewObj = {
@@ -107,22 +107,22 @@ function TableInit() {
                                 "username": '',
                                 'password': '',
                                 "startTime": '',
-                                'endTime': '',
+                                'stop_time': '',//bug3:根据数据库字段和显示的内容进行改动
                                 'status': ''
                             };
 
                             dataNewObj.id = userInfo[i].id;
                             dataNewObj.username = userInfo[i].username;
                             dataNewObj.password = userInfo[i].password;
-                            dataNewObj.startTime = timeFormat(userInfo[i].startTime);
-                            dataNewObj.endTime = timeFormat(userInfo[i].endTime);
+                            dataNewObj.startTime =timeFormat(userInfo[i].start_time);
+                            dataNewObj.endTime =timeFormat(userInfo[i].stop_time);
                             dataNewObj.status = userInfo[i].status;
                             NewData.push(dataNewObj);
                         }
-                        //console.log(NewData)
+
                     }
                     var data = {
-                        total: res.data.total,
+                        total: res.data.total,//
                         rows: NewData
                     };
 
@@ -167,9 +167,9 @@ function addFunctionAlty(value, row, index) {
 
     btnText += "<button type=\"button\" id=\"btn_look\" onclick=\"editUserPage(" + "'" + row.id + "')\" class=\"btn btn-default-g ajax-link\">编辑</button>&nbsp;&nbsp;";
 
-    if (row.status == "1") {
+    if (row.status === "1") {
         btnText += "<button type=\"button\" id=\"btn_stop" + row.id + "\" onclick=\"changeStatus(" + "'" + row.id + "'" + ")\" class=\"btn btn-danger-g ajax-link\">关闭</button>&nbsp;&nbsp;";
-    } else if (row.status == "0") {
+    } else if (row.status === "0") {
         btnText += "<button type=\"button\" id=\"btn_stop" + row.id + "\" onclick=\"changeStatus(" + "'" + row.id + "'" + ")\" class=\"btn btn-success-g ajax-link\">开启</button>&nbsp;&nbsp;"
     }
     btnText += "<button type=\"button\" id=\"btn_stop" + row.id + "\" onclick=\"deleteUser(" + "'" + row.id + "'" + ")\" class=\"btn btn-danger-g ajax-link\">删除</button>&nbsp;&nbsp;";
@@ -179,8 +179,8 @@ function addFunctionAlty(value, row, index) {
 
 //重置密码
 function resetPassword(id) {
-    alert("重置密码")
 
+    openCreateUserPage(id,'重置');
 }
 
 // 打开创建用户页
@@ -194,19 +194,57 @@ function openCreateUserPage(id, value) {
     }
     window.location.href = 'createNewUser.html';
 }
+//编辑用户
+function editUserPage(id) {
 
-function editUserPage() {
-    alert("编辑用户")
+    openCreateUserPage(id,'编辑')
+
 }
 // 修改用户状态（禁用、开启）
 function changeStatus(index) {
+    var url = '/admin/modifyUserStatus';
+    var data = {
+        "id": index,
+    };
+    commonAjaxPost(true, url, data, function (result) {
+        if (result.code === "666") {
+            layer.msg("修改成功", {icon: 1});
+            setTimeout(function () {
+                window.location.href = 'userManage.html';
+            }, 1000)
+        } else if (result.code === "333") {
+            layer.msg(result.message, {icon: 2});
+            setTimeout(function () {
+                window.location.href = 'login.html';
+            }, 1000)
+        } else {
+            layer.msg(result.message, {icon: 2});
+        }
+    })
 
-    alert("修改用户状态")
 }
 
 //删除用户
 function deleteUser(id) {
+    var url = '/admin/deleteUserInfoById';
+    var data = {
+        "id": id,
+    };
+    commonAjaxPost(true, url, data, function (result) {
+        if (result.code === "666") {
+            layer.msg("删除完成", {icon: 1});
+            setTimeout(function () {
+                window.location.href = 'userManage.html';
+            }, 1000)
+        } else if (result.code === "333") {
+            layer.msg(result.message, {icon: 2});
+            setTimeout(function () {
+                window.location.href = 'login.html';
+            }, 1000)
+        } else {
+            layer.msg(result.message, {icon: 2});
+        }
+    })
 
-    alert("删除用户")
 }
 

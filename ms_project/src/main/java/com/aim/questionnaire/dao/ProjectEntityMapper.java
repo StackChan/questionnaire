@@ -57,17 +57,17 @@ public interface ProjectEntityMapper {
     
     /**
      * 根据项目名字查询项目名字（精准）
-     * @author Youcf
+     * @author shan csk
      */
     ProjectEntity queryProjectEntity(ProjectEntity projectEntity);
     /**
      * 修改项目
-     * @author Youcf
+     * @author shan csk
      */
     int updateProjectById(ProjectEntity projectEntity);
     /**
      * 根据项目id查询项目名
-     * @author Youcf
+     * @author shan csk
      */
     String queryProjectName(String id);
 }

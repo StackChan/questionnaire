@@ -81,7 +81,7 @@ public class ProjectService {
     
     /**
      * 根据项目名字精准查询是否存在
-     * @author Youcf
+     * @author shan csk
      */
     public boolean queryProjectEntityIsExit(ProjectEntity projectEntity) {
 		ProjectEntity projectEntity2 = projectEntityMapper.queryProjectEntity(projectEntity);
@@ -94,7 +94,7 @@ public class ProjectService {
 	}
     /**
      * 根据名字查询项目
-     * @author Youcf
+     * @author shan csk
      */
     public ProjectEntity queryProjectEntity(ProjectEntity projectEntity) {
     	return projectEntityMapper.queryProjectEntity(projectEntity);
@@ -102,7 +102,7 @@ public class ProjectService {
     
     /**
      * 根据id修改项目
-     * @author Youcf
+     * @author shan csk
      */
     public int updateProjectById(ProjectEntity projectEntity) {
     	Date date = DateUtil.getCreateTime();
@@ -113,7 +113,7 @@ public class ProjectService {
     
     /**
      * 查询项目名称
-     * @author Youcf
+     * @author shan csk
      * @param id
      * @return
      */

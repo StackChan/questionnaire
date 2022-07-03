@@ -4,14 +4,18 @@ import com.aim.questionnaire.common.utils.DateUtil;
 import com.aim.questionnaire.common.utils.UUIDUtil;
 import com.aim.questionnaire.dao.UserEntityMapper;
 import com.aim.questionnaire.dao.entity.UserEntity;
+
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import javax.xml.ws.Action;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.*;
 
 /**
  * Created by wln on 2018\8\9 0009.
@@ -22,21 +26,33 @@ public class UserService {
     @Autowired
     private UserEntityMapper userEntityMapper;
 
+    //@Autowired
+    //private SysUserService sysUserService;
+
+
     /**
      * 查询用户列表（模糊搜索）
      * @param map
      * @return
      */
     public PageInfo queryUserList(Map<String,Object> map) {
-    	Object pageNum1 = map.get("pageNum");
-        int pageNum = Integer.parseInt(String.valueOf(pageNum1));
-        Object pageSize1 = map.get("pageSize");
-        int pageSize = Integer.parseInt(String.valueOf(pageSize1));
-        
-    	PageHelper.startPage(pageNum, pageSize);
-    	List<Map<String, Object>> list = userEntityMapper.queryUserList(map);
-    	PageInfo<Map<String, Object>> pageInfo = new PageInfo<Map<String, Object>>(list);
-    	return pageInfo;
+        String username="%";
+        String name="";
+        if(map.get("userName")!=null){
+            name= (String) map.get("userName");
+        }
+        username+=name;
+        username+="%";
+        iniStatus();
+        Map<String,Object> mapNew=new HashMap<>();
+        mapNew.put("username",username);
+        int pageNum=(int)map.get("pageNum");
+        int pageSize=(int)map.get("pageSize");
+        PageHelper.startPage(pageNum,pageSize);
+        List<Map<String,Object>> list=userEntityMapper.queryUserList(mapNew);
+
+        PageInfo<Map<String,Object>>page = new PageInfo<>(list);
+        return page;
     }
 
     /**
@@ -47,8 +63,7 @@ public class UserService {
     public int addUserInfo(Map<String,Object> map) {
         if(map.get("username") != null) {
             int userResult = userEntityMapper.queryExistUser(map);
-            if(userResult != 0) {
-                //用户名已经存在
+            if(userResult != 0) {//用户名已经存在
                 return 3;
             }
         }
@@ -81,8 +96,19 @@ public class UserService {
      * @return
      */
     public int modifyUserInfo(Map<String, Object> map) {
+        Date date = DateUtil.getCreateTime();
+        String startTimeStr = map.get("startTime").toString();
+        String endTimeStr = map.get("stopTime").toString();
+        Date startTime = DateUtil.getMyTime(startTimeStr);
+        Date endTime = DateUtil.getMyTime(endTimeStr);
 
-        return 0;
+        String password = map.get("password").toString();
+        map.replace("startTime",startTime);
+        map.replace("stopTime",endTime);
+        map.replace("password",password);
+        map.put("lastUpdateDate",date);
+        int result = userEntityMapper.modifyUserInfo(map);//返回修改过的user
+        return result;
     }
 
     /**
@@ -91,7 +117,18 @@ public class UserService {
      * @return
      */
     public int modifyUserStatus(Map<String, Object> map) {
-        return 0;
+        UserEntity userEntity=new UserEntity();
+        userEntity.setId((String) map.get("id"));
+        Map<String,Object> oldMap=userEntityMapper.selectUserInfoById(userEntity);
+        String status= (String) oldMap.get("status");
+        if(status.equals("1")){
+            status="0";
+        }else {
+            status="1";
+        }
+        map.put("status",status);
+        int result =userEntityMapper.modifyUserStatus(map);
+        return result;
     }
 
     /**
@@ -100,24 +137,51 @@ public class UserService {
      * @return
      */
     public Map<String,Object> selectUserInfoById(UserEntity userEntity) {
-  
-        return null;
+
+        Map<String,Object> map=userEntityMapper.selectUserInfoById(userEntity);
+        return map;
+    }
+
+    public List<UserEntity> selectUserInfo(UserEntity userEntity){
+        List<UserEntity> list=userEntityMapper.selectUserInfo(userEntity);
+        return list;
     }
 
     /**
      * 删除用户信息
-     * @param userEntity
-     * @return
      */
-    public int deteleUserInfoById(UserEntity userEntity) {
-
+    public int deleteUserInfoById(UserEntity userEntity) {
+        userEntityMapper.deleteUserInfoById(userEntity);
         return 0;
     }
     /**
      * 根据用户名精准查询用户
-     * @author Youcf
      */
     public UserEntity queryByUserName(String userName) {
-    	return userEntityMapper.selectAllByName(userName);
+        return userEntityMapper.selectAllByName(userName);
+    }
+
+
+    /**
+     * 更新用户权限
+     */
+
+    public void iniStatus() {
+        long current = DateUtil.getCreateTime().getTime();//获得当前时间
+        String username = "%%";
+        Map<String, Object> newMap = new HashMap<>();
+        newMap.put("username", username);
+        List<Map<String, Object>> list = userEntityMapper.queryUserList(newMap);//查询所有User列表
+        for (Map<String, Object> map : list) {
+            if (map.get("status").equals("1")) {
+                LocalDateTime stopTime = (LocalDateTime) map.get("stop_time");
+                Long milliSecond = stopTime.toInstant(ZoneOffset.of("+8")).toEpochMilli();
+                if (current > milliSecond) {
+                    map.put("status", 0);
+                    userEntityMapper.modifyUserStatus(map);
+                }
+            }
+        }
+
     }
 }

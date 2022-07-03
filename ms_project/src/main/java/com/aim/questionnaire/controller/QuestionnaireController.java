@@ -26,7 +26,7 @@ public class QuestionnaireController {
 	
 	/**
 	 * 添加问卷
-	 * @author Youcf
+	 * @author shan csk
 	 */
 	 @RequestMapping(value = "/addQuestionnaire",method = RequestMethod.POST, headers = "Accept=application/json")
 	 public HttpResponseEntity addQuestionnaire(@RequestBody QuestionnaireEntity questionnaireEntity) {
@@ -52,7 +52,7 @@ public class QuestionnaireController {
 	 
 	 /**
 	  * 根据id查询问卷状态
-	  * @author Youcf
+	  * @author shan csk
 	  */
 	 @RequestMapping(value = "/selectQuestionnaireStatus",method = RequestMethod.POST, headers = "Accept=application/json")
 	 public HttpResponseEntity selectQuestionnaireStatus(@RequestBody HashMap<String, Object> map) {
@@ -66,7 +66,7 @@ public class QuestionnaireController {
 	 }
 	 /**
 	  * 修改问卷
-	  * @author Youcf
+	  * @author shan csk
 	  */
 	 @RequestMapping(value = "/modifyQuestionnaireInfo",method = RequestMethod.POST, headers = "Accept=application/json")
 	 public HttpResponseEntity modifyQuestionnaireInfo(@RequestBody QuestionnaireEntity questionnaireEntity) {
@@ -106,7 +106,7 @@ public class QuestionnaireController {
 	 
 	 /**
 	  * 删除问卷
-	  * @author Youcf
+	  * @author shan csk
 	  * @param map
 	  * @return
 	  */
@@ -138,7 +138,7 @@ public class QuestionnaireController {
 	 
 	 /**
 	  * 根据id查询问卷
-	  * @author Youcf
+	  * @author shan csk
 	  */
 	 @RequestMapping(value = "/queryQuestionnaireAll",method = RequestMethod.POST, headers = "Accept=application/json")
 	 public HttpResponseEntity queryQuestionnaireAll(@RequestBody HashMap<String, Object> map) {
@@ -153,7 +153,7 @@ public class QuestionnaireController {
 	 }
 	 /**
 	  * 根据项目ID查询该项目下问卷
-	  * @author Youcf
+	  * @author shan csk
 	  * @param questionnaireEntity
 	  * @return
 	  */

@@ -14,7 +14,7 @@ public class ModelService {
 	
 	/**
 	 * 根据parentId查询id和name
-	 * @author Youcf
+
 	 */
 	public List<Map<String,Object>> queryNameByParentId(int parentId){
 		List<Map<String,Object>> list = modelEntityMapper.queryNameByParentId(parentId);
