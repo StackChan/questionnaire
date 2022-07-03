@@ -91,7 +91,7 @@ function TableInit() {
     //初始化Table
     oTableInit.Init = function () {
         $('#countTable').bootstrapTable({
-            url: httpRequestUrl + '/queryQuestionnaireAboutSchool',         //请求后台的URL（*）
+            url: httpRequestUrl + '/project/queryQuestionnaireAboutSchool',         //请求后台的URL（*）
             method: 'POST',                      //请求方式（*）
             striped: true,                      //是否显示行间隔色
             pagination: true,                   //是否显示分页（*）
@@ -151,7 +151,7 @@ function TableInit() {
             responseHandler: function (res) {
                 //console.log(res);
                 if (res.code == "666") {
-                    var userInfo = res.data.list;
+                    var userInfo = res.data;
                     var NewData = [];
                     if (userInfo.length) {
                         for (var i = 0; i < userInfo.length; i++) {

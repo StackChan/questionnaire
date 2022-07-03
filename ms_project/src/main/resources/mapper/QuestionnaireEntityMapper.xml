@@ -70,6 +70,10 @@
     where id = #{id,jdbcType=VARCHAR}
     AND question_stop != '1'
   </delete>
+  <delete id="deleteAnswerByQuestionId" parameterType="java.lang.String">
+    delete from answer_info
+    where questionnaire_id = #{questionId,jdbcType=VARCHAR}
+  </delete>
   <insert id="insert" parameterType="com.aim.questionnaire.dao.entity.QuestionnaireEntity">
     <!--
       WARNING - @mbg.generated
@@ -358,6 +362,11 @@
     AND question_stop != "0"
     ORDER BY creation_date DESC
   </select>
+  <!--根据项目id查询此项目下的全部问卷-->
+  <select id="queryAnswerList" parameterType="java.lang.String" resultType="map">
+    SELECT id, questionnaire_id, name,school,phone,email,answer_num,state,answer,answer_time FROM answer_info
+    WHERE questionnaire_id = #{questionId,jdbcType=VARCHAR}
+  </select>
 
   <!--根据问卷id查询问卷概述信息-->
   <select id="queryQuestionnaireInfoById" resultType="java.util.Map">
@@ -381,6 +390,9 @@
   <update id="pauseQuestionnaire" parameterType="java.util.Map">
     update questionnaire_info set question_stop = '5' , release_time = null where id = #{id}
   </update>
+  <update id="submitAnswer" parameterType="java.util.Map">
+  update answer_info set state = '1' , answer_time = #{answerTime}, answer = #{answer} where questionnaire_id = #{questionId} and email = #{answerEmail}
+</update>
   <!--根据问卷id查询问卷的详细信息-->
   <select id="queryQuestionnaireById" parameterType="java.util.Map" resultType="java.util.Map">
     SELECT question_name AS questionName,question_content AS questionContent,question AS questionList, question_count as questionCount
@@ -388,6 +400,13 @@
     WHERE id = #{questionId,jdbcType=VARCHAR}
     <!--<if test="questionStop != null">-->
       <!--AND  question_stop = #{questionStop,jdbcType =VARCHAR}-->
+    <!--</if>-->
+  </select>
+  <select id="queryQuestionnaireAboutSchool" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT state,school FROM answer_info
+    WHERE questionnaire_id = #{questionId,jdbcType=VARCHAR}
+    <!--<if test="questionStop != null">-->
+    <!--AND  question_stop = #{questionStop,jdbcType =VARCHAR}-->
     <!--</if>-->
   </select>
 
@@ -816,6 +835,12 @@
     </foreach>
   </insert>
 
+  <!--批量插入问卷答题详情-->
+  <insert id="addAnswer" parameterType="map" >
+    insert into answer_info (id, questionnaire_id, name, school, phone, email, answer_num, state)
+    values (#{id},#{questionId},#{answerName},#{answerBelong},#{answerPhone},#{answerEmail},#{answerNum},'0')
+  </insert>
+
   <!--批量插入学校答题情况明细-->
   <insert id="addQuestionRecordAnswerSchool" parameterType="string">
     insert into ${tableName}
@@ -983,6 +1008,7 @@
   <delete id="deleteTableByTableName" parameterType="string">
     drop table if exists ${tableNameAnswer},${tableNameSchool},${questionId}
   </delete>
+
 <select id="selectByName" parameterType="java.lang.String" resultType="java.lang.Integer">
   select
   COUNT(*)

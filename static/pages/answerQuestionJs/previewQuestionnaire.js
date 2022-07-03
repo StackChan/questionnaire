@@ -384,8 +384,8 @@ function getUrlInfo() {
         if (eORp != 'e' && eORp != 'p' && eORp != 'zzz' && eORp != 'l') {
             eORp = 'zzz'
         }
-        // contact = contactBefore.split('=')[1];
-        contact = contactBefore.substr(2).substring(0,16);
+        contact = contactBefore.split('=')[1];
+        // contact = contactBefore.substr(2).substring(0,16);
     }
 };
 

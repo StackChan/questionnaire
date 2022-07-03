@@ -5,6 +5,7 @@ import com.aim.questionnaire.common.utils.DateUtil;
 import com.aim.questionnaire.common.utils.UUIDUtil;
 import com.aim.questionnaire.dao.QuestionnaireEntityMapper;
 import com.aim.questionnaire.dao.entity.QuestionnaireEntity;
+import com.alibaba.fastjson.JSON;
 import org.apache.commons.mail.EmailException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -147,13 +148,19 @@ public class QuestionnaireService {
 	 * @param map
 	 * @return
 	 */
-    public int addSendQuestionnaire(HashMap<String, Object> map){
+    public int addSendQuestionnaire(HashMap<String, Object> map) throws EmailException {
+
+    	// 删除冗余数据
+    	questionnaireEntityMapper.deleteAnswerByQuestionId(map.get("questionId").toString());
+
         map.put("questionStop","1");
         // 获取当前时间
         Date date = DateUtil.getCreateTime();
         map.put("lastUpdateDate",date);
         map.put("releaseTime",date);
         int total = 0;
+
+        //判断发送方法
         if(map.get("sendType").toString().equals("0")){
 
 		} else if(map.get("sendType").toString().equals("1"))
@@ -164,8 +171,7 @@ public class QuestionnaireService {
 			total = send.size();
 			for (Map<String, Object> person : send
 			) {
-				try {
-					//
+
 					String contextTemp = context;
 					String name = person.get("answerName").toString();
 					String result = contextTemp.replaceAll("【联系人姓名】",name);
@@ -173,9 +179,13 @@ public class QuestionnaireService {
 					//TODO:改成服务器ip
 					String result1 = result.replaceAll("【填写问卷地址】","127.0.0.1:56010"+"/pages/previewQuestionnaire.html?id="+map.get("questionId").toString()+"&e="+email);
 					emailService.sendMail(email, emailTitle, result1, false);
-				} catch (EmailException e) {
-					e.printStackTrace();
-				}
+
+					String id = UUIDUtil.getOneUUID();
+					person.put("id",id);
+					person.put("questionId",map.get("questionId"));
+
+					questionnaireEntityMapper.addAnswer(person);
+
 			}
 		}
 		map.put("answerTotal",total);
@@ -280,15 +290,94 @@ public class QuestionnaireService {
 
 	public int addAnswerQuestionnaire(HashMap<String, Object> map) {
     	Map<String , Object> map1 = questionnaireEntityMapper.queryQuestionnaireInfoById(map.get("questionId").toString());
-    	Integer count = (Integer) map1.get("questionCount");
-    	if (count==null){
-    		count = 0;
-		}else {
-    		count += 1;
+
+		Map<String,Object> answerDetail = new HashMap<>();
+		Date date = DateUtil.getCurrentDate();
+		answerDetail.put("answerTime",date);
+		answerDetail.put("answer",JSON.toJSONString(map.get("answerList")));
+		answerDetail.put("questionId",map.get("questionId"));
+		answerDetail.put("answerEmail",map.get("answerEmail"));
+		questionnaireEntityMapper.submitAnswer(answerDetail);
+
+
+    	//    	Integer count = (Integer) map1.get("questionCount");
+//    	if (count==null){
+//    		count = 0;
+//		}else {
+//    		count += 1;
+//		}
+
+
+		// 按照state刷新现在的已提交答案数
+		String questionId = map.get("questionId").toString();
+		List<Map<String,Object>> answers = questionnaireEntityMapper.queryAnswerList(questionId);
+		int count = 0;
+		for (Map<String , Object> answer: answers
+			 ) {
+			String s = answer.get("state").toString();
+			if (s.equals("1")){
+				count++;
+			}
 		}
+
     	map.put("questionCount",count);
 		int result = questionnaireEntityMapper.addAnswerQuestionnaire(map);
 		return result;
 
+	}
+
+	public List<Map<String,Object>> queryQuestionnaireAboutSchool(Map<String, Object> map) {
+
+    	List<Map<String,Object>> list = questionnaireEntityMapper.queryQuestionnaireAboutSchool(map);
+
+    	List<Map<String , Object>> schoolList = new ArrayList<>();
+
+		for (Map<String, Object> answerData: list
+			 ) {
+			String schoolName = answerData.get("school").toString();
+			boolean schoolExist = false;
+			for (Map<String,Object> schoolData: schoolList
+				 ) {
+				if (schoolData.get("answerBelong").toString().equals(schoolName)){
+					int answerTotal = (int)schoolData.get("answerTotal");
+					answerTotal++;
+					schoolData.replace("answerTotal",answerTotal);
+					if (answerData.get("state").toString().equals("1")){
+						int effectiveAnswer = (int)schoolData.get("effectiveAnswer");
+						effectiveAnswer++;
+						schoolData.replace("effectiveAnswer",effectiveAnswer);
+					}
+					schoolExist =true;
+				}
+			}
+			if (!schoolExist){
+				Map<String,Object> schoolData = new HashMap<>();
+				schoolData.put("answerBelong",answerData.get("school"));
+				if (answerData.get("state").toString().equals("1")){
+					schoolData.put("effectiveAnswer",1);
+					schoolData.put("answerTotal",1);
+				}else {
+					schoolData.put("effectiveAnswer",0);
+					schoolData.put("answerTotal",1);
+				}
+				schoolList.add(schoolData);
+			}
+		}
+
+		for (Map<String,Object> schoolData : schoolList
+			 ) {
+			if ((int)schoolData.get("answerTotal")==0) continue;
+			double rate = Double.valueOf(schoolData.get("effectiveAnswer").toString())/Double.valueOf(schoolData.get("answerTotal").toString());
+			schoolData.put("answerRate",rate);
+		}
+
+
+    	return schoolList;
+
+	}
+
+	public List<Map<String, Object>> queryAnswerList(Map<String, Object> map) {
+		List<Map<String,Object>> list = questionnaireEntityMapper.queryAnswerList(map.get("questionId").toString());
+		return list;
 	}
 }
