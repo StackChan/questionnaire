@@ -291,6 +291,24 @@ public class QuestionnaireController {
 		}
 		return httpResponseEntity;
 	}
+	/**
+	 * 按学校生成表格
+	 * @param map
+	 * @return
+	 */
+	@RequestMapping(value = "/queryAnswerList", method = RequestMethod.POST, headers = "Accept=application/json")
+	public HttpResponseEntity queryAnswerList(@RequestBody Map<String, Object> map) {
+		HttpResponseEntity httpResponseEntity = new HttpResponseEntity();
+		try {
+			List<Map<String,Object>> result = questionnaireService.queryAnswerList(map);
+			httpResponseEntity.setCode(Constans.SUCCESS_CODE);
+			httpResponseEntity.setData(result);
+		}catch (Exception e){
+			httpResponseEntity.setCode(Constans.EXIST_CODE);
+			httpResponseEntity.setData(null);
+		}
+		return httpResponseEntity;
+	}
 	 /**
 	  * 查询模板
 	  * @param questionnaireEntity

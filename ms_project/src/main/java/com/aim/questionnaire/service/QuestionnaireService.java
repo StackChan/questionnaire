@@ -375,4 +375,9 @@ public class QuestionnaireService {
     	return schoolList;
 
 	}
+
+	public List<Map<String, Object>> queryAnswerList(Map<String, Object> map) {
+		List<Map<String,Object>> list = questionnaireEntityMapper.queryAnswerList(map.get("questionId").toString());
+		return list;
+	}
 }
