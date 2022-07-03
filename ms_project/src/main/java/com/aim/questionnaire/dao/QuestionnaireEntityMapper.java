@@ -388,4 +388,14 @@ public interface QuestionnaireEntityMapper {
     int pauseQuestionnaire(Map<String, Object> map);
 
     int addAnswerQuestionnaire(HashMap<String, Object> map);
+
+    void addAnswer(Map<String, Object> person);
+
+    void deleteAnswerByQuestionId(String questionId);
+
+    List<Map<String, Object>> queryAnswerList(String questionId);
+
+    void submitAnswer(Map<String, Object> answerDetail);
+
+    List<Map<String, Object>> queryQuestionnaireAboutSchool(Map<String, Object> map);
 }

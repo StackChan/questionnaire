@@ -197,9 +197,15 @@ public class QuestionnaireController {
 	 @RequestMapping(value = "/addSendQuestionnaire", method = RequestMethod.POST, headers = "Accept=application/json")
 	    public HttpResponseEntity addSendQuestionnaire(@RequestBody HashMap<String, Object> map) {
 	        HttpResponseEntity httpResponseEntity = new HttpResponseEntity();
-	        int result = questionnaireService.addSendQuestionnaire(map);
-	        httpResponseEntity.setCode(Constans.SUCCESS_CODE);
-	        httpResponseEntity.setData(result);
+	        try {
+				int result = questionnaireService.addSendQuestionnaire(map);
+				httpResponseEntity.setCode(Constans.SUCCESS_CODE);
+				httpResponseEntity.setData(result);
+			}catch (Exception e){
+				httpResponseEntity.setCode(Constans.EXIST_CODE);
+				httpResponseEntity.setData(null);
+			}
+
 	        return httpResponseEntity;
 	    }
 	    /**
@@ -265,6 +271,24 @@ public class QuestionnaireController {
 		int result = questionnaireService.pauseQuestionnaire(map);
 		httpResponseEntity.setCode(Constans.SUCCESS_CODE);
 		httpResponseEntity.setData(result);
+		return httpResponseEntity;
+	}
+	/**
+	 * 按学校生成表格
+	 * @param map
+	 * @return
+	 */
+	@RequestMapping(value = "/queryQuestionnaireAboutSchool", method = RequestMethod.POST, headers = "Accept=application/json")
+	public HttpResponseEntity queryQuestionnaireAboutSchool(@RequestBody Map<String, Object> map) {
+		HttpResponseEntity httpResponseEntity = new HttpResponseEntity();
+		try {
+			List<Map<String,Object>> result = questionnaireService.queryQuestionnaireAboutSchool(map);
+			httpResponseEntity.setCode(Constans.SUCCESS_CODE);
+			httpResponseEntity.setData(result);
+		}catch (Exception e){
+			httpResponseEntity.setCode(Constans.EXIST_CODE);
+			httpResponseEntity.setData(null);
+		}
 		return httpResponseEntity;
 	}
 	 /**
