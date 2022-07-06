@@ -392,7 +392,7 @@
   </update>
   <update id="submitAnswer" parameterType="java.util.Map">
   update answer_info set state = '1' , answer_time = #{answerTime}, answer = #{answer} where questionnaire_id = #{questionId} and email = #{answerEmail}
-</update>
+  </update>
   <!--根据问卷id查询问卷的详细信息-->
   <select id="queryQuestionnaireById" parameterType="java.util.Map" resultType="java.util.Map">
     SELECT question_name AS questionName,question_content AS questionContent,question AS questionList, question_count as questionCount
@@ -401,6 +401,11 @@
     <!--<if test="questionStop != null">-->
       <!--AND  question_stop = #{questionStop,jdbcType =VARCHAR}-->
     <!--</if>-->
+  </select>
+
+  <select id="queryAnswers" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT answer FROM answer_info
+    WHERE questionnaire_id = #{questionId}
   </select>
   <select id="queryQuestionnaireAboutSchool" parameterType="java.util.Map" resultType="java.util.Map">
     SELECT state,school FROM answer_info

@@ -4,6 +4,7 @@ import com.aim.questionnaire.beans.HttpResponseEntity;
 import com.aim.questionnaire.common.Constans;
 import com.aim.questionnaire.dao.entity.QuestionnaireEntity;
 import com.aim.questionnaire.service.QuestionnaireService;
+import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -208,6 +209,27 @@ public class QuestionnaireController {
 
 	        return httpResponseEntity;
 	    }
+
+	    /**
+	 * 查看答题情况
+	 * @param map
+	 * @return
+	 */
+	    @RequestMapping(value = "/queryAnswerDetail",method = RequestMethod.POST, headers = "Accept=application/json")
+		public HttpResponseEntity queryAnswerDetail(@RequestBody Map<String,Object> map) {
+			HttpResponseEntity httpResponseEntity = new HttpResponseEntity();
+			try {
+				List<Map<String,Object>> answerDetail=questionnaireService.queryAnswerDetail(map);
+				httpResponseEntity.setData(answerDetail);
+				httpResponseEntity.setCode(Constans.SUCCESS_CODE);
+				httpResponseEntity.setMessage(Constans.STATUS_MESSAGE);
+			} catch (Exception e) {
+				logger.info("queryUserList 查询用户列表（模糊搜索）>>>>>>>>>>>" + e.getLocalizedMessage());
+				httpResponseEntity.setCode(Constans.EXIST_CODE);
+				httpResponseEntity.setMessage(Constans.EXIST_MESSAGE);
+			}
+			return httpResponseEntity;
+		}
 	    /**
 	 * 添加答题记录
 	 * @param map
