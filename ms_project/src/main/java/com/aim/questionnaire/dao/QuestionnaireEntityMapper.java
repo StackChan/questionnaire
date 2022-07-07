@@ -398,4 +398,6 @@ public interface QuestionnaireEntityMapper {
     void submitAnswer(Map<String, Object> answerDetail);
 
     List<Map<String, Object>> queryQuestionnaireAboutSchool(Map<String, Object> map);
+
+    List<Map<String,Object>> queryAnswers(Map<String, Object> map);
 }

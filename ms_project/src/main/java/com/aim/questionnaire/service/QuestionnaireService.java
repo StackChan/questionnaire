@@ -380,4 +380,54 @@ public class QuestionnaireService {
 		List<Map<String,Object>> list = questionnaireEntityMapper.queryAnswerList(map.get("questionId").toString());
 		return list;
 	}
+
+	public List<Map<String, Object>> queryAnswerDetail(Map<String, Object> map) {
+
+    	// 取得问卷详情
+    	Map<String, String> result = questionnaireEntityMapper.queryQuestionnaireById((HashMap<String, Object>) map);
+    	List<Map<String,Object>> questionDetail = (List<Map<String,Object>>)JSON.parse(result.get("questionList"));
+
+    	//取得答案详情
+    	List<Map<String,Object>> answers= null;
+    	try {
+			answers = questionnaireEntityMapper.queryAnswers(map);
+    	}catch (Exception e){
+			int i =0;
+		}
+		List<List<String>> answerDetail = new ArrayList<>();
+		for (Map<String,Object> answer: answers
+			 ) {
+			List<String> o = (List<String>) JSON.parse(answer.get("answer").toString());
+			answerDetail.add(o);
+		}
+
+		// 将答案详情统计到问卷详情中
+		for (int i=0; i<questionDetail.size(); i++){
+
+			switch (questionDetail.get(i).get("questionType").toString()){
+				case "0": // 单选题
+				case "1": // 多选题
+
+					for (Map<String,Object> o:(List<Map<String,Object>>)questionDetail.get(i).get("questionOption")
+						 ) {
+						o.put("optionTotal",0);
+					}
+
+					for( List<String> answer: answerDetail
+						 ) {
+						String[] options = answer.get(i).toString().split("&");
+						for (String op: options
+							 ) {
+							int option = Integer.parseInt(op);
+							int total = (int)((Map<String,Object>)(((List<?>) questionDetail.get(i).get("questionOption")).get(option))).get("optionTotal")+1;
+							((Map<String,Object>)(((List<?>) questionDetail.get(i).get("questionOption")).get(option))).replace("optionTotal",total);
+							}
+						}
+
+					break;
+			}
+
+		}
+    	return questionDetail;
+	}
 }

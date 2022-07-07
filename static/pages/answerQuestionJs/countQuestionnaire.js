@@ -1,7 +1,3 @@
-/**
- * Created by Amy on 2018/8/13.
- */
-
 $(function () {
     $("#questionNameCount").html( getCookie("nameOfQuestionnaire") + "数量统计");
     $("#questionNameDetail").html( getCookie("nameOfQuestionnaire") + "学校答题情况明细");
