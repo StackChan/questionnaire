@@ -5,8 +5,20 @@ spring:
   jpa:
     database: MYSQL
 
+  cache:
+    type: redis
+    redis:
+      time-to-live: 60000  #缓存超时时间60s
+      cache-null-values: false   #是否缓存空值:否
+  redis:
+    database: 1
+    host: 127.0.0.1
+    port: 6379
+    password:
+
 server:
   port: 8085
+#  address: localhost
 
 #公共配置与profiles选择无关
 mybatis:

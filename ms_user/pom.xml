@@ -122,10 +122,24 @@
 			<version>2.4.2.1-RELEASE</version>
 		</dependency>
 
+<!--		redis-->
+		<!-- springboot cache -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-cache</artifactId>
+		</dependency>
+		<!-- 使用redis作为缓存中间件 -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-redis</artifactId>
 		</dependency>
+		<!-- 使用Jackson做序列化与反序列化 -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+		</dependency>
+
+
 		<!-- Jsoup -->
 		<dependency>
 			<groupId>org.jsoup</groupId>
@@ -136,11 +150,6 @@
 			<groupId>com.alibaba</groupId>
 			<artifactId>fastjson</artifactId>
 			<version>2.0.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.crazycake</groupId>
-			<artifactId>shiro-redis</artifactId>
-			<version>2.4.2.1-RELEASE</version>
 		</dependency>
 
 		<dependency>

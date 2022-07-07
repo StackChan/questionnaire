@@ -1,8 +1,10 @@
 package com.aim.questionnaire.controller;
 
+
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.web.bind.annotation.GetMapping;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,4 +27,17 @@ public class LoadBalanceTest {
         System.out.println(config);
         return config;
     }
+
+
+    @Cacheable(value="test", key="'myKeyGenerator'")
+    @RequestMapping("/test")
+    public String testString(int id,String s,Object o) {
+        // 写入一条String数据
+        String str="for test";
+        // 获取string数据
+        System.out.println("test被调用");
+        return str;
+    }
+
+
 }
