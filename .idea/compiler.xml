@@ -12,7 +12,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="api-gateway" target="1.5" />
+      <module name="api-gateway" target="1.8" />
       <module name="project" target="1.8" />
       <module name="service-1-api" target="1.8" />
       <module name="user" target="1.8" />
