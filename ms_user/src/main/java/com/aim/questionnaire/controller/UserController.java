@@ -108,7 +108,7 @@ public class UserController {
                 httpResponseEntity.setMessage(Constans.ADD_MESSAGE);
             }
         } catch (Exception e) {
-            logger.info("addUserInfo 创建用户的基本信息>>>>>>>>>>>" + e.getLocalizedMessage());
+            logger.info("addUserInfo >>>>>>>>>>>" + e.getLocalizedMessage());
             httpResponseEntity.setCode(Constans.EXIST_CODE);
             httpResponseEntity.setMessage(Constans.EXIST_MESSAGE);
         }

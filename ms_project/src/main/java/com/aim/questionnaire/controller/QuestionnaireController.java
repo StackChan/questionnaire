@@ -224,7 +224,7 @@ public class QuestionnaireController {
 				httpResponseEntity.setCode(Constans.SUCCESS_CODE);
 				httpResponseEntity.setMessage(Constans.STATUS_MESSAGE);
 			} catch (Exception e) {
-				logger.info("queryUserList 查询用户列表（模糊搜索）>>>>>>>>>>>" + e.getLocalizedMessage());
+				logger.info("queryAnswerDetail异常>>>>>>>>>" + e.getLocalizedMessage());
 				httpResponseEntity.setCode(Constans.EXIST_CODE);
 				httpResponseEntity.setMessage(Constans.EXIST_MESSAGE);
 			}

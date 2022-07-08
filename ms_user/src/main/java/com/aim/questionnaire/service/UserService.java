@@ -70,7 +70,7 @@ public class UserService {
      * 添加后,user:'queryUserList'缓存将被清除,以确保queryUserList时会重新从mysql数据库取得准确数据
      * 从而达成redis数据与mysql数据一致
      */
-    @CacheEvict(value="user", key="'queryUserList")
+    @CacheEvict(value="user", key="'queryUserList'")
     public int addUserInfo(Map<String,Object> map) {
         if(map.get("username") != null) {
             int userResult = userEntityMapper.queryExistUser(map);
@@ -107,7 +107,7 @@ public class UserService {
      * @return
      * '@CacheEvict'作用同上
      */
-    @CacheEvict(value="user", key="'queryUserList")
+    @CacheEvict(value="user", key="'queryUserList'")
     public int modifyUserInfo(Map<String, Object> map) {
         Date date = DateUtil.getCreateTime();
         String startTimeStr = map.get("startTime").toString();
