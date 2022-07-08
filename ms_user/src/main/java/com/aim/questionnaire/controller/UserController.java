@@ -43,14 +43,14 @@ public class UserController {
     @RequestMapping(value="/userLogin",method= RequestMethod.POST, headers = "Accept=application/json")
     public HttpResponseEntity userLogin(@RequestBody UserEntity userEntity) {
         HttpResponseEntity httpResponseEntity = new HttpResponseEntity();
-        try {//bug1:对登陆进行修改如下
-            List<UserEntity> hasUser = userService.selectUserInfo(userEntity);//调用service层，然后在调用持久层
-            if(CollectionUtils.isEmpty(hasUser) ) {//如果为空则提示用户不存在
+        try {
+            List<UserEntity> hasUser = userService.selectUserInfo(userEntity);
+            if(CollectionUtils.isEmpty(hasUser) ) {
                 httpResponseEntity.setCode(Constans.EXIST_CODE);
                 httpResponseEntity.setData(null);
                 httpResponseEntity.setMessage(Constans.LOGIN_USERNAME_MESSAGE);
             }else {
-                if(userEntity.getPassword().equals(hasUser.get(0).getPassword())){//判断密码是否正确
+                if(userEntity.getPassword().equals(hasUser.get(0).getPassword())){
                     httpResponseEntity.setCode(Constans.SUCCESS_CODE);
                     httpResponseEntity.setData(hasUser.get(0));
                     httpResponseEntity.setMessage(Constans.LOGIN_MESSAGE);

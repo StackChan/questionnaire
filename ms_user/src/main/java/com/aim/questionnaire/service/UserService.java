@@ -5,6 +5,10 @@ import com.aim.questionnaire.common.utils.UUIDUtil;
 import com.aim.questionnaire.dao.UserEntityMapper;
 import com.aim.questionnaire.dao.entity.UserEntity;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.shiro.SecurityUtils;
@@ -25,6 +29,8 @@ import java.util.*;
  * Created by wln on 2018\8\9 0009.
  */
 @Service
+@JsonDeserialize(using = LocalDateTimeDeserializer.class)
+@JsonSerialize(using = LocalDateTimeSerializer.class)
 public class UserService {
 
     @Autowired
@@ -152,7 +158,6 @@ public class UserService {
     }
 
 
-
     @Cacheable(value="user", key="'login:'+ #userEntity.username")
     public List<UserEntity> selectUserInfo(UserEntity userEntity){
         List<UserEntity> list=userEntityMapper.selectUserInfo(userEntity);
@@ -186,6 +191,8 @@ public class UserService {
     /**
      * 更新用户权限
      */
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
     public void iniStatus() {
         long current = DateUtil.getCreateTime().getTime();//获得当前时间
         String username = "%%";
@@ -194,6 +201,7 @@ public class UserService {
         List<Map<String, Object>> list = userEntityMapper.queryUserList(newMap);//查询所有User列表
         for (Map<String, Object> map : list) {
             if (map.get("status").equals("1")) {
+
                 LocalDateTime stopTime = (LocalDateTime) map.get("stop_time");
                 Long milliSecond = stopTime.toInstant(ZoneOffset.of("+8")).toEpochMilli();
                 if (current > milliSecond) {
