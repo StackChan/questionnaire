@@ -397,6 +397,9 @@ public class QuestionnaireService {
 		List<List<String>> answerDetail = new ArrayList<>();
 		for (Map<String,Object> answer: answers
 			 ) {
+			if(answer==null){
+				continue;
+			}
 			List<String> o = (List<String>) JSON.parse(answer.get("answer").toString());
 			answerDetail.add(o);
 		}
