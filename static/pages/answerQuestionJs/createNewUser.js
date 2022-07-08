@@ -82,7 +82,7 @@ function changeTitle() {
                 var userInfo = result.data;
                 userNameOld = $("#userName").val(userInfo.username);
                 $("#password").val(userInfo.password);
-                $("#config-demo").val(userInfo.startTime.replace(/-/g,'/') + " ~ " + userInfo.stopTime.replace(/-/g,'/'));
+                $("#config-demo").val(userInfo.startTime + " ~ " + userInfo.stopTime);
                 var roleId = userInfo.roleId;
                 $("#userRoleAll").val(roleId);
 
@@ -171,7 +171,7 @@ function changeTitle() {
                 var userInfo = result.data;
                 $("#userName").val(userInfo.username);
                 $("#password").val(userInfo.password);
-                $("#config-demo").val(userInfo.startTime.replace(/-/g,'/') + " ~ " + userInfo.stopTime.replace(/-/g,'/'));
+                $("#config-demo").val(userInfo.startTime + " ~ " + userInfo.stopTime);
                 var roleId = userInfo.roleId;
                 $("#userRoleAll").val(roleId);
             } else if (result.code === "333") {

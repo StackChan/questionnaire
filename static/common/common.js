@@ -5,7 +5,7 @@
 // var httpRequestUrl = "http://114.115.132.86:8080/questionSurvey";
 
 
-var httpRequestUrl = "http://127.0.0.1:56010";
+var httpRequestUrl = "http://118.123.3.141:56010";
 // var httpRequestUrl = "http://127.0.0.1:8085";
 //var httpRequestUrl = "http://10.211.55.5:8085";
 //var httpRequestUrl = "http://39.99.231.41:8088/";
