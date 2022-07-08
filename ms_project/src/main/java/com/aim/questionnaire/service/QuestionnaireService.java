@@ -177,7 +177,7 @@ public class QuestionnaireService {
 					String result = contextTemp.replaceAll("【联系人姓名】",name);
 					String email = person.get("answerEmail").toString();
 					//此处填写了服务器ip
-					String result1 = result.replaceAll("【填写问卷地址】","http://118.123.3.141/:56010"+"/pages/previewQuestionnaire.html?id="+map.get("questionId").toString()+"&e="+email);
+					String result1 = result.replaceAll("【填写问卷地址】","http://118.123.3.141:56010"+"/pages/previewQuestionnaire.html?id="+map.get("questionId").toString()+"&e="+email);
 					emailService.sendMail(email, emailTitle, result1, false);
 
 					String id = UUIDUtil.getOneUUID();
